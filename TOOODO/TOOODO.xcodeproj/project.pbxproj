@@ -7,11 +7,25 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		3B4953A72CD9FED500CFE07D /* RealmSwift in Frameworks */ = {isa = PBXBuildFile; productRef = 3B4953A62CD9FED500CFE07D /* RealmSwift */; };
 		3B4953AC2CDA029600CFE07D /* Data in Frameworks */ = {isa = PBXBuildFile; productRef = 3B4953AB2CDA029600CFE07D /* Data */; };
 		3B4953AE2CDA029600CFE07D /* Domain in Frameworks */ = {isa = PBXBuildFile; productRef = 3B4953AD2CDA029600CFE07D /* Domain */; };
 		3B4953B02CDA029600CFE07D /* Presentation in Frameworks */ = {isa = PBXBuildFile; productRef = 3B4953AF2CDA029600CFE07D /* Presentation */; };
+		3B639E342CDC9D3A00D9D13F /* Swinject in Frameworks */ = {isa = PBXBuildFile; productRef = 3B639E332CDC9D3A00D9D13F /* Swinject */; };
+		3B639E362CDC9D3A00D9D13F /* Swinject-Dynamic in Frameworks */ = {isa = PBXBuildFile; productRef = 3B639E352CDC9D3A00D9D13F /* Swinject-Dynamic */; };
 /* End PBXBuildFile section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		3B4953EF2CDA097F00CFE07D /* Embed Frameworks */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 10;
+			files = (
+			);
+			name = "Embed Frameworks";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
 		3B49538C2CD9F97500CFE07D /* TOOODO.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = TOOODO.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -33,10 +47,11 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				3B4953A72CD9FED500CFE07D /* RealmSwift in Frameworks */,
 				3B4953AE2CDA029600CFE07D /* Domain in Frameworks */,
 				3B4953B02CDA029600CFE07D /* Presentation in Frameworks */,
 				3B4953AC2CDA029600CFE07D /* Data in Frameworks */,
+				3B639E362CDC9D3A00D9D13F /* Swinject-Dynamic in Frameworks */,
+				3B639E342CDC9D3A00D9D13F /* Swinject in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -80,6 +95,7 @@
 				3B4953882CD9F97500CFE07D /* Sources */,
 				3B4953892CD9F97500CFE07D /* Frameworks */,
 				3B49538A2CD9F97500CFE07D /* Resources */,
+				3B4953EF2CDA097F00CFE07D /* Embed Frameworks */,
 			);
 			buildRules = (
 			);
@@ -90,10 +106,11 @@
 			);
 			name = TOOODO;
 			packageProductDependencies = (
-				3B4953A62CD9FED500CFE07D /* RealmSwift */,
 				3B4953AB2CDA029600CFE07D /* Data */,
 				3B4953AD2CDA029600CFE07D /* Domain */,
 				3B4953AF2CDA029600CFE07D /* Presentation */,
+				3B639E332CDC9D3A00D9D13F /* Swinject */,
+				3B639E352CDC9D3A00D9D13F /* Swinject-Dynamic */,
 			);
 			productName = TOOODO;
 			productReference = 3B49538C2CD9F97500CFE07D /* TOOODO.app */;
@@ -124,7 +141,7 @@
 			mainGroup = 3B4953832CD9F97500CFE07D;
 			minimizedProjectReferenceProxies = 1;
 			packageReferences = (
-				3B4953A32CD9FED500CFE07D /* XCRemoteSwiftPackageReference "realm-swift" */,
+				3B639E322CDC9D3A00D9D13F /* XCRemoteSwiftPackageReference "Swinject" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 3B49538D2CD9F97500CFE07D /* Products */;
@@ -360,22 +377,17 @@
 /* End XCConfigurationList section */
 
 /* Begin XCRemoteSwiftPackageReference section */
-		3B4953A32CD9FED500CFE07D /* XCRemoteSwiftPackageReference "realm-swift" */ = {
+		3B639E322CDC9D3A00D9D13F /* XCRemoteSwiftPackageReference "Swinject" */ = {
 			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/realm/realm-swift.git";
+			repositoryURL = "https://github.com/Swinject/Swinject";
 			requirement = {
-				branch = master;
-				kind = branch;
+				kind = upToNextMajorVersion;
+				minimumVersion = 2.9.1;
 			};
 		};
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
-		3B4953A62CD9FED500CFE07D /* RealmSwift */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = 3B4953A32CD9FED500CFE07D /* XCRemoteSwiftPackageReference "realm-swift" */;
-			productName = RealmSwift;
-		};
 		3B4953AB2CDA029600CFE07D /* Data */ = {
 			isa = XCSwiftPackageProductDependency;
 			productName = Data;
@@ -387,6 +399,16 @@
 		3B4953AF2CDA029600CFE07D /* Presentation */ = {
 			isa = XCSwiftPackageProductDependency;
 			productName = Presentation;
+		};
+		3B639E332CDC9D3A00D9D13F /* Swinject */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 3B639E322CDC9D3A00D9D13F /* XCRemoteSwiftPackageReference "Swinject" */;
+			productName = Swinject;
+		};
+		3B639E352CDC9D3A00D9D13F /* Swinject-Dynamic */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 3B639E322CDC9D3A00D9D13F /* XCRemoteSwiftPackageReference "Swinject" */;
+			productName = "Swinject-Dynamic";
 		};
 /* End XCSwiftPackageProductDependency section */
 	};

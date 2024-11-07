@@ -7,9 +7,14 @@
 
 import SwiftUI
 import Presentation
+import Data
 
 @main
 struct TOOODOApp: App {
+    init() {
+        DependencyProvider.shared.register()
+    }
+    
     var body: some Scene {
         WindowGroup {
             RootView()
