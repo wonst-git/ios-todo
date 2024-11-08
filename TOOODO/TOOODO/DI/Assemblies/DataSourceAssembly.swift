@@ -10,6 +10,7 @@ import Data
 
 struct DataSourceAssembly: Assembly {
     func assemble(container: Swinject.Container) {
-        container.register(LocalDataSource.self) { _ in LocalDataSourceImpl() }
+        container.register(TodoLocalDataSource.self) { _ in TodoLocalDataSourceImpl() }
+        container.register(CategoryLocalDataSource.self) { _ in CategoryLocalDataSourceImpl() }
     }
 }

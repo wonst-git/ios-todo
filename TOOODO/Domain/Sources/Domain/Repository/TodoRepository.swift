@@ -6,7 +6,7 @@
 //
 
 public protocol TodoRepository {
-    func getTodos(categoryId: String) -> Array<TodoEntity>
-    func upsertTodo(categoryId: String, todo: TodoEntity)
-    func deleteTodo(todoId: String)
+    func getTodos(categoryId: String) throws -> Array<Todo>
+    func upsertTodo(categoryId: String, todo: Todo) throws
+    func deleteTodo(todoId: String) throws
 }

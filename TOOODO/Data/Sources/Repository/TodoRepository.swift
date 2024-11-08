@@ -9,21 +9,21 @@ import Domain
 import RealmSwift
 
 public class TodoRepositoryImpl: TodoRepository {
-    private let localDataSource: LocalDataSource
+    private let localDataSource: TodoLocalDataSource
     
-    public init(localDataSource: LocalDataSource) {
+    public init(localDataSource: TodoLocalDataSource) {
         self.localDataSource = localDataSource
     }
     
-    public func getTodos(categoryId: String) -> Array<Domain.TodoEntity> {
-        return localDataSource.getTodos(categoryId: try! ObjectId(string: categoryId)).map { $0.toEntity() }
+    public func getTodos(categoryId: String) throws -> Array<Domain.Todo> {
+        return try localDataSource.getTodos(categoryId: ObjectId(string: categoryId)).map { $0.toDomain() }
     }
     
-    public func upsertTodo(categoryId: String, todo: Domain.TodoEntity) {
-        try! localDataSource.upsertTodo(categoryId: ObjectId(string: categoryId), todo: TodoDto.fromEntity(entity: todo))
+    public func upsertTodo(categoryId: String, todo: Domain.Todo) throws {
+        try localDataSource.upsertTodo(categoryId: ObjectId(string: categoryId), todo: TodoDto.fromDomain(entity: todo))
     }
     
-    public func deleteTodo(todoId: String) {
-        try! localDataSource.deleteTodo(todoId: ObjectId(string: todoId))
+    public func deleteTodo(todoId: String) throws {
+        try localDataSource.deleteTodo(todoId: ObjectId(string: todoId))
     }
 }
