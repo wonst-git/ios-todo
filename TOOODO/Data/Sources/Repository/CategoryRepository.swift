@@ -9,21 +9,21 @@ import Domain
 import RealmSwift
 
 public class CategoryRepositoryImpl: CategoryRepository {
-    private let localDataSource: LocalDataSource
+    private let localDataSource: CategoryLocalDataSource
     
-    public init(localDataSource: LocalDataSource) {
+    public init(localDataSource: CategoryLocalDataSource) {
         self.localDataSource = localDataSource
     }
     
-    public func getCategories() -> Array<Domain.CategoryEntity> {
-        localDataSource.getCategories().map { $0.toEntity() }
+    public func getCategories() -> Array<Domain.Category> {
+        localDataSource.getCategories().map { $0.toDomain() }
     }
     
-    public func upsertCategory(category: Domain.CategoryEntity) {
-        try! localDataSource.upsertCategory(category: CategoryDto.fromEntity(category))
+    public func upsertCategory(category: Domain.Category) throws {
+        try localDataSource.upsertCategory(category: CategoryDto.fromDomain(category))
     }
     
-    public func deleteCategory(categoryId: String) {
-        try! localDataSource.deleteCategory(categoryId: ObjectId(string: categoryId))
+    public func deleteCategory(categoryId: String) throws {
+        try localDataSource.deleteCategory(categoryId: ObjectId(string: categoryId))
     }
 }

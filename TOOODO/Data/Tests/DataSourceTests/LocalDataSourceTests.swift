@@ -11,16 +11,16 @@ import Testing
 
 struct LocalDataSourceTests {
     private let realm: Realm
-    private let localDataSource: LocalDataSource
     
     init() {
         realm = try! Realm(configuration: .init(inMemoryIdentifier: "TOOODOTests"))
-        localDataSource = LocalDataSourceImpl(realm)
     }
     
     @Test func categoryCRUDTest() {
+        let localDataSource = CategoryLocalDataSourceImpl(realm)
+        
         // Get Test
-        let categories = self.localDataSource.getCategories()
+        let categories = localDataSource.getCategories()
         
         print("(category)get test: \(localDataSource.getCategories())")
         #expect(categories.isEmpty)
@@ -32,7 +32,7 @@ struct LocalDataSourceTests {
             "color": 0xffffffff
         ])
                                    
-        try! self.localDataSource.upsertCategory(category: category)
+        try! localDataSource.upsertCategory(category: category)
         
         print("id: \(category.id)  convertid: \(try! ObjectId(string: category.id.stringValue))")
         
@@ -47,7 +47,7 @@ struct LocalDataSourceTests {
             "color": 0xffffffff
         ])
         
-        try! self.localDataSource.upsertCategory(category: newCategory)
+        try! localDataSource.upsertCategory(category: newCategory)
         
         print("(category)update test: \(localDataSource.getCategories())")
         #expect(localDataSource.getCategories().first?.category == "Category1 Updated")
@@ -61,13 +61,15 @@ struct LocalDataSourceTests {
     
     @Test
     func todoCRUDTest() {
+        let localDataSource = TodoLocalDataSourceImpl(realm)
+        
         let category = CategoryDto(value: [
             "category": "Category1",
             "categoryDes": "First Category",
             "color": 0xffffffff
         ])
         
-        try! localDataSource.upsertCategory(category: category)
+        try! CategoryLocalDataSourceImpl(realm).upsertCategory(category: category)
         
         // Get Test
         let todos = localDataSource.getTodos(categoryId: category.id)

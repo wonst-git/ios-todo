@@ -15,11 +15,11 @@ public class TodoDto: Object {
 }
 
 extension TodoDto {
-    func toEntity() -> TodoEntity {
-        TodoEntity(id: self.id.stringValue, todo: self.todo, completed: self.completed)
+    func toDomain() -> Todo {
+        Todo(id: self.id.stringValue, todo: self.todo, completed: self.completed)
     }
     
-    class func fromEntity(entity: TodoEntity) -> TodoDto {
+    class func fromDomain(entity: Todo) -> TodoDto {
         let id: ObjectId = entity.id.isEmpty ? ObjectId() : try! ObjectId(string: entity.id)
         
         return TodoDto(value: [

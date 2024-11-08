@@ -5,7 +5,7 @@
 //  Created by 노원진 on 11/7/24.
 //
 
-public struct TodoEntity {
+public struct Todo {
     public let id: String
     public let todo: String
     public let completed: Bool
