@@ -11,7 +11,7 @@ import Swinject
 
 struct RepositoryAssembly: Assembly {
     func assemble(container: Container) {
-        container.register(CategoryRepository.self) { CategoryRepositoryImpl(localDataSource: $0.resolve(LocalDataSource.self)!)}
-        container.register(TodoRepository.self) { TodoRepositoryImpl(localDataSource: $0.resolve(LocalDataSource.self)!)}
+        container.register(CategoryRepository.self) { CategoryRepositoryImpl(localDataSource: $0.resolve(CategoryLocalDataSource.self)!)}
+        container.register(TodoRepository.self) { TodoRepositoryImpl(localDataSource: $0.resolve(TodoLocalDataSource.self)!)}
     }
 }

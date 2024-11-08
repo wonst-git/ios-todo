@@ -6,7 +6,7 @@
 //
 
 public protocol CategoryRepository {
-    func getCategories() -> Array<CategoryEntity>
-    func upsertCategory(category: CategoryEntity)
-    func deleteCategory(categoryId: String)
+    func getCategories() -> Array<Category>
+    func upsertCategory(category: Category) throws
+    func deleteCategory(categoryId: String) throws
 }
