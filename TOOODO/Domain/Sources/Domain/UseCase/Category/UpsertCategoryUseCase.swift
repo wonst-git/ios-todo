@@ -6,7 +6,7 @@
 //
 
 public protocol UpsertCategoryUseCase {
-    
+    func execute(_ category: Category) throws
 }
 
 public final class UpsertCategoryUseCaseImpl: UpsertCategoryUseCase {
@@ -14,5 +14,9 @@ public final class UpsertCategoryUseCaseImpl: UpsertCategoryUseCase {
     
     public init(_ categoryRepository: CategoryRepository) {
         self.categoryRepository = categoryRepository
+    }
+    
+    public func execute(_ category: Category) throws {
+        try self.categoryRepository.upsertCategory(category: category)
     }
 }

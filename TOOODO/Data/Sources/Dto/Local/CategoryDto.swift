@@ -22,14 +22,21 @@ extension CategoryDto {
     }
     
     class func fromDomain(_ entity: Category) -> CategoryDto {
-        let id: ObjectId = entity.id.isEmpty ? ObjectId() : try! ObjectId(string: entity.id)
-        
-        return CategoryDto(value: [
-            "id": id,
-            "category": entity.category,
-            "categoryDes": entity.categoryDes,
-            "color": entity.color,
-            "todos": entity.todos.map { TodoDto.fromDomain(entity: $0)}
-        ])
+        if entity.id.isEmpty {
+            return CategoryDto(value: [
+                "category": entity.category,
+                "categoryDes": entity.categoryDes,
+                "color": entity.color,
+                "todos": entity.todos.map { TodoDto.fromDomain(entity: $0)}
+            ])
+        } else {
+            return CategoryDto(value: [
+                "id": try! ObjectId(string: entity.id),
+                "category": entity.category,
+                "categoryDes": entity.categoryDes,
+                "color": entity.color,
+                "todos": entity.todos.map { TodoDto.fromDomain(entity: $0)}
+            ])
+        }
     }
 }

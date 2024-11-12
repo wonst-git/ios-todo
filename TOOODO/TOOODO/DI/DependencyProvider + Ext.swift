@@ -6,12 +6,9 @@
 //
 
 import Swinject
+import DIContainer
 
-class DependencyProvider {
-    static let shared = DependencyProvider()
-    
-    private let container = Container()
-    
+extension DependencyProvider {
     func register() {
         _ = Assembler(
             [

@@ -6,7 +6,7 @@
 //
 
 public protocol GetCategoriesUseCase {
-    
+    func execute() -> Array<Category>
 }
 
 public final class GetCategoriesUseCaseImpl: GetCategoriesUseCase {
@@ -14,5 +14,9 @@ public final class GetCategoriesUseCaseImpl: GetCategoriesUseCase {
     
     public init(_ categoryRepository: CategoryRepository) {
         self.categoryRepository = categoryRepository
+    }
+    
+    public func execute() -> Array<Category> {
+        return self.categoryRepository.getCategories()
     }
 }

@@ -20,12 +20,17 @@ extension TodoDto {
     }
     
     class func fromDomain(entity: Todo) -> TodoDto {
-        let id: ObjectId = entity.id.isEmpty ? ObjectId() : try! ObjectId(string: entity.id)
-        
-        return TodoDto(value: [
-            "id": id,
-            "todo": entity.todo,
-            "completed": entity.completed
-        ])
+        if entity.id.isEmpty {
+            return TodoDto(value: [
+                "todo": entity.todo,
+                "completed": entity.completed
+            ])
+        } else {
+            return TodoDto(value: [
+                "id": try! ObjectId(string: entity.id),
+                "todo": entity.todo,
+                "completed": entity.completed
+            ])
+        }
     }
 }
