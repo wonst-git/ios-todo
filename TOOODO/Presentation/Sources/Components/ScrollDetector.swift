@@ -8,8 +8,7 @@
 import SwiftUI
 
 struct ScrollDetector: UIViewRepresentable {
-    var onScroll: (CGFloat) -> ()
-    var onDraggingEnd: (CGFloat, CGFloat) -> ()
+    var onDraggingEnd: (CGFloat) -> ()
     
     func makeCoordinator() -> Coordinator {
         return Coordinator(parent: self)
@@ -37,18 +36,12 @@ struct ScrollDetector: UIViewRepresentable {
         
         var isDelegateAdded: Bool = false
         
-        func scrollViewDidScroll(_ scrollView: UIScrollView) {
-            parent.onScroll(scrollView.contentOffset.y)
-        }
-        
         func scrollViewWillEndDragging(_ scrollView: UIScrollView, withVelocity velocity: CGPoint, targetContentOffset: UnsafeMutablePointer<CGPoint>) {
-            parent.onDraggingEnd(targetContentOffset.pointee.y, velocity.y)
+            parent.onDraggingEnd(targetContentOffset.pointee.y)
         }
         
         func scrollViewDidEndDecelerating(_ scrollView: UIScrollView) {
-            let velocity = scrollView.panGestureRecognizer.velocity(in: scrollView.panGestureRecognizer.view)
-            
-            parent.onDraggingEnd(scrollView.contentOffset.y, velocity.y)
+            parent.onDraggingEnd(scrollView.contentOffset.y)
         }
     }
 }

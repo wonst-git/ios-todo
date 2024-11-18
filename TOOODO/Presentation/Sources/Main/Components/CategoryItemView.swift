@@ -14,13 +14,21 @@ struct CategoryItemView: View {
     private let count: Int
     private let completedCount: Int
     
-    init(category: Domain.Category) {
+    private let clickAction: (Actions) -> ()
+    
+    enum Actions {
+        case Select, More, Add
+    }
+    
+    init(category: Domain.Category, clickAction: @escaping (Actions) -> ()) {
         self.category = category
         
         self.count = category.todos.count
         self.completedCount = category.todos.count(where: {
             $0.completed
         })
+        
+        self.clickAction = clickAction
     }
     
     var body: some View {
@@ -28,7 +36,7 @@ struct CategoryItemView: View {
             Text(category.category)
                 .font(.system(size: 44))
                 .fontWeight(.bold)
-                .foregroundStyle(.white)
+                .foregroundStyle(.black.opacity(0.8))
                 .lineLimit(3)
             
             Spacer()
@@ -37,7 +45,7 @@ struct CategoryItemView: View {
             Text(category.categoryDes)
                 .font(.system(size: 24))
                 .fontWeight(.medium)
-                .foregroundStyle(.white)
+                .foregroundStyle(.black.opacity(0.8))
                 .lineLimit(2)
             
             Spacer().frame(minHeight: 30)
@@ -48,7 +56,7 @@ struct CategoryItemView: View {
                     ZStack(alignment: .bottom) {
                         Color.clear
                         
-                        Color.white
+                        Color.black.opacity(0.8)
                             .frame(
                                 height: count == 0
                                 ? 0
@@ -59,7 +67,7 @@ struct CategoryItemView: View {
                 .frame(width: 20)
                 .background(
                     RoundedRectangle(cornerRadius: 10)
-                        .stroke(.white, lineWidth: 2)
+                        .stroke(.black.opacity(0.8), lineWidth: 4)
                 )
                 .clipShape(RoundedRectangle(cornerRadius: 10))
                 
@@ -75,7 +83,7 @@ struct CategoryItemView: View {
                     Text("tasks")
                         .font(.system(size: 16))
                 }
-                .foregroundStyle(.white)
+                .foregroundStyle(.black.opacity(0.8))
                 
                 Spacer()
             }
@@ -85,13 +93,13 @@ struct CategoryItemView: View {
             
             HStack {
                 Button {
-                    
+                    clickAction(.More)
                 } label: {
                     Image(systemName: "ellipsis")
                         .frame(width: 70, height: 70)
-                        .foregroundStyle(.white.opacity(0.7))
+                        .foregroundStyle(.black.opacity(0.8))
                         .background(
-                            Circle().stroke(.white.opacity(0.7), lineWidth: 2)
+                            Circle().stroke(.black.opacity(0.8), lineWidth: 4)
                         )
                         .clipShape(Circle())
                 }
@@ -99,40 +107,49 @@ struct CategoryItemView: View {
                 Spacer()
                 
                 Button {
-                    print("clicked")
+                    clickAction(.Add)
                 } label: {
                     Image(systemName: "plus")
                         .frame(width: 70, height: 70)
-                        .foregroundStyle(.black)
-                        .background(.white.opacity(0.7))
+                        .foregroundStyle(.white)
+                        .background(.black.opacity(0.6))
                         .clipShape(Circle())
                 }
             }
         }
         .padding([.horizontal, .bottom], 8)
         .padding(.top, 20)
-        .background(
-            ZStack {
-                let color = Color.init(hex: category.color).darker()
-                
-                color
-                
-                Circle()
-                    .fill(color.darker())
-                    .padding(.all, 40)
-                
-                Circle()
-                    .fill(color.darker().darker())
-                    .padding(.all, 100)
-            }
-                .blur(radius: 8)
-        )
+        .background {
+            BlurView()
+                .background {
+                    GeometryReader { geo in
+                        let color = Color.init(hex: category.color)
+                        let width = geo.size.width
+                        let height = geo.size.height
+                        
+                        Color.white
+                     
+                        ForEach((0...2), id: \.self) { id in
+                            let size = CGFloat((120...360).randomElement()!)
+                            let center = size / 2
+                            
+                            let offsetX = CGFloat((0...Int(width)).randomElement() ?? 0) - center
+                            let offsetY = CGFloat((0...Int(height)).randomElement() ?? 0) - center
+                            
+                            Circle()
+                                .size(width: size, height: size)
+                                .offset(x: offsetX, y: offsetY)
+                                .fill(color.darker(by: CGFloat((0...20).randomElement() ?? 0)))
+                        }
+                    }
+                }
+        }
         .clipShape(RoundedRectangle.init(cornerRadius: 30))
-        .shadow(radius: 10, x: 0, y: 0)
+        .shadow(color: .gray.opacity(0.4), radius: 10, x: 0, y: 0)
         .padding(.horizontal, 8)
         .frame(minHeight: 400, maxHeight: .infinity)
         .onTapGesture {
-            print("onTap")
+            clickAction(.Select)
         }
     }
 }
@@ -147,5 +164,15 @@ struct CategoryItemView: View {
         todos: []
     )
     
-    CategoryItemView(category: category)
+    CategoryItemView(category: category) {
+        switch($0) {
+        case .Select:
+            break
+        case .Add:
+            break
+        case .More:
+            break
+        }
+    }
+
 }

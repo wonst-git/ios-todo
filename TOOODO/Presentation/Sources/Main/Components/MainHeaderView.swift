@@ -15,14 +15,14 @@ struct MainHeaderView: View {
     @State private var headerRect: CGRect = .zero
     
     @Binding private var offsetY: CGFloat
-    @Binding private var categories: [Domain.Category]
+    private var categoriesCount: Int
     
     private let size: CGSize
     private let parentSafeArea: EdgeInsets
         
-    init(offsetY: Binding<CGFloat>, categories: Binding<[Domain.Category]>, size: CGSize, safeArea: EdgeInsets) {
+    init(offsetY: Binding<CGFloat>, categoriesCount: Int, size: CGSize, safeArea: EdgeInsets) {
         self._offsetY = offsetY
-        self._categories = categories
+        self.categoriesCount = categoriesCount
         self.size = size
         self.parentSafeArea = safeArea
     }
@@ -53,7 +53,7 @@ struct MainHeaderView: View {
                             }
                             .scaleEffect(1 - (progress * 0.2), anchor: .leading)
                             .offset(y: (headerRect.midY - firstTextRect.midY) * progress)
-                        Text("Projects (\(categories.count))")
+                        Text("Projects (\(categoriesCount))")
                             .font(.system(size: 30))
                             .fontWeight(.bold)
                             .overlay {

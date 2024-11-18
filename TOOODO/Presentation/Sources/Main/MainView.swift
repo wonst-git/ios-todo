@@ -11,7 +11,8 @@ import Domain
 public struct MainView: View {
     @StateObject private var viewModel: MainViewModel = MainViewModel()
     @State private var offsetY: CGFloat = .zero
-    @State private var opacity: CGFloat = .zero
+    @State private var presentPopup: Popup? = nil
+    @State private var category: Domain.Category?
     
     public init() { }
     
@@ -23,22 +24,18 @@ public struct MainView: View {
                     let safeArea = geo.safeAreaInsets
                     ScrollView(showsIndicators: false) {
                         VStack(spacing: .zero) {
-                            MainHeaderView(offsetY: $offsetY, categories: $viewModel.categories, size: size, safeArea: safeArea)
+                            MainHeaderView(offsetY: $offsetY, categoriesCount: viewModel.categories.count, size: size, safeArea: safeArea)
                                 .zIndex(1)
                                 .id("Header")
                             
-                            SampleCardsView()
+                            CategoryViews()
                             
                         }
                         .background {
                             ScrollDetector { offset in
-                                let _ = print("offsetY: \(offset)")
-                            } onDraggingEnd: { offset, velocity in
                                 let headerHeight = size.height * 0.14 - 70
                                 
-                                let targetEnd = offset + (velocity * 45)
-                                
-                                if targetEnd < headerHeight && targetEnd > 0 {
+                                if offset < headerHeight && offset > 0 {
                                     withAnimation(.interactiveSpring(response: 0.55, dampingFraction: 0.65, blendDuration: 0.65)) {
                                         proxy.scrollTo("Header", anchor: .top)
                                     }
@@ -57,45 +54,160 @@ public struct MainView: View {
                 }
             }
             
-            VStack {
-                Button("UpsertTest") {
-                    viewModel.upsertCategoryTest()
-                }
-                .background(.black)
-                
-                Button("DeleteTest") {
-                    viewModel.deleteCategoryTest()
-                    
-                }
-                .background(.black)
+            Button("+ Create") {
+                presentPopup = .createCategory
             }
+            .padding(.all, 10)
+            .background(
+                BlurView()
+                    .background(.white.opacity(0.2))
+                    .clipShape(RoundedRectangle(cornerRadius: 10))
+                    .shadow(color: .black.opacity(0.2), radius: 10)
+            )
+            .foregroundStyle(.black)
+            
+            popupViews()
         }
         .frame(maxHeight: .infinity)
     }
     
     @ViewBuilder
-    func SampleCardsView() -> some View {
+    func CategoryViews() -> some View {
         LazyVStack(spacing: 10) {
             ForEach(viewModel.categories, id: \.id) { category in
-                CategoryItemView(category: category)
+                CategoryItemView(category: category) {
+                    self.category = category
+                    
+                    switch($0) {
+                    case .Select:
+                        break
+                    case .Add:
+                        presentPopup = .createTodo
+                        
+                        break
+                    case .More:
+                        presentPopup = .moreBottomSheet
+                        
+                        break
+                    }
+                }
             }
         }
         .padding([.top, .bottom], 30)
     }
+}
+
+//MARK: PopupViews
+extension MainView {
     
     @ViewBuilder
-    private func createCategoryFAB() -> some View {
-        Button("+ Create") {
+    private func popupViews() -> some View {
+        switch presentPopup {
+        case .createCategory:
+            CreateCategoryPopup(
+                isActive: Binding(
+                    get: {
+                        presentPopup == .createCategory
+                    },
+                    set: { _ in
+                        presentPopup = nil
+                    }
+                )) { title, des, color in
+                    viewModel.upsertCategory(id: nil, title: title, des: des, color: color)
+                }
+        case .modifyCategory:
+            EditCategoryPopup(
+                category,
+                isActive: Binding(
+                    get: {
+                        presentPopup == .modifyCategory
+                    },
+                    set: { _ in
+                        presentPopup = nil
+                    }
+                )) { title, des, color in
+                    viewModel.upsertCategory(id: category?.id, title: title, des: des, color: color)
+                }
+        case .createTodo:
+            CreateTodoPopup(
+                isActive: Binding(
+                    get: {
+                        presentPopup == .createTodo
+                    },
+                    set: { _ in
+                        presentPopup = nil
+                    }
+                )
+            ) { todoName in
+                viewModel.upsertTodo(categoryId: category?.id ?? "", todoName: todoName)
+            }
+        case .moreBottomSheet:
+            BaseBottomSheet(
+                isPresented: Binding(
+                    get: {
+                        presentPopup == .moreBottomSheet
+                    },
+                    set: { _ in
+                        presentPopup = nil
+                    }
+                ), height: 100
+            ) { close in
+                Button {
+                    Task {
+                        await close()
+                        presentPopup = .modifyCategory
+                    }
+                } label: {
+                    HStack {
+                        Image(systemName: "pencil")
+                        Text("Edit")
+                            .font(.title3)
+                        Spacer()
+                    }
+                    .padding(.vertical, 10)
+                    .padding(.horizontal, 16)
+                    .frame(maxWidth: .infinity)
+                    
+                }
+                .foregroundStyle(.black)
+                
+                Divider()
+                
+                Button {
+                    Task {
+                        await close()
+                        
+                        if let id = category?.id {
+                            viewModel.deleteCategory(categoryId: id)
+                        }
+                    }
+                } label: {
+                    HStack {
+                        Image(systemName: "trash")
+                        Text("Delete")
+                            .font(.title3)
+                        Spacer()
+                    }
+                    .padding(.vertical, 10)
+                    .padding(.horizontal, 16)
+                    .frame(maxWidth: .infinity)
+                }
+                .foregroundStyle(.red.darker(by: 30))
+            }
             
+        case .none:
+            EmptyView()
         }
+    }
+    
+    private enum Popup {
+        case createCategory, modifyCategory, moreBottomSheet, createTodo
     }
 }
 
 #Preview {
     MainView()
 }
-
-
 
 private struct ScrollOffsetPreferenceKey: PreferenceKey {
     static var defaultValue: CGFloat { .zero }

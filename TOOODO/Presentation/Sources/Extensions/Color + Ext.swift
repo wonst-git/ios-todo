@@ -38,20 +38,16 @@ extension Color {
         if color.getHue(&hue, saturation: &saturation, brightness: &brightness, alpha: &alpha) {
             let newBrightness: CGFloat = max(min(brightness + multiplier * brightness, 1.0), 0.0)
             
-            print("getHue: \(alpha)")
             return .init(hue: hue, saturation: saturation, brightness: newBrightness, opacity: alpha)
         } else if color.getRed(&red, green: &green, blue: &blue, alpha: &alpha) {
             let newRed = min(max(red + multiplier * red, 0.0), 1.0)
             let newGreen = min(max(green + multiplier * green, 0.0), 1.0)
             let newBlue = min(max(blue + multiplier * blue, 0.0), 1.0)
-            
-//            return .init(UIColor(red: newRed, green: newGreen, blue: newBlue, alpha: alpha))
-            print("getRed: \(alpha)")
+
             return .init(red: newRed, green: newGreen, blue: newBlue, opacity: alpha)
         } else if color.getWhite(&white, alpha: &alpha) {
             let newWhite = CGFloat(white + multiplier * white)
             
-            print("getWhite: \(alpha)")
             return .init(white: newWhite, opacity: alpha)
         }
         

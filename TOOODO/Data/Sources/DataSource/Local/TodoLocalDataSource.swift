@@ -7,9 +7,10 @@
 
 import Foundation
 import RealmSwift
+import Combine
 
 public protocol TodoLocalDataSource {
-    func getTodos(categoryId: ObjectId) -> Array<TodoDto>
+    func getTodos(categoryId: ObjectId) -> AnyPublisher<Array<TodoDto>, Error>
     func upsertTodo(categoryId: ObjectId, todo: TodoDto) throws
     func deleteTodo(todoId: ObjectId) throws
 }
@@ -25,10 +26,13 @@ public class TodoLocalDataSourceImpl: TodoLocalDataSource {
         self.realm = realm
     }
     
-    public func getTodos(categoryId: ObjectId) -> Array<TodoDto> {
-        guard let category = realm.objects(CategoryDto.self).first(where: { $0.id == categoryId}) else { return [] }
-        
-        return Array(category.todos)
+    public func getTodos(categoryId: ObjectId) -> AnyPublisher<Array<TodoDto>, Error> {
+        return realm.objects(CategoryDto.self).first(where: { $0.id == categoryId})!.todos
+            .collectionPublisher
+            .map {
+                Array($0)
+            }
+            .eraseToAnyPublisher()
     }
     
     public func upsertTodo(categoryId: ObjectId, todo: TodoDto) throws {

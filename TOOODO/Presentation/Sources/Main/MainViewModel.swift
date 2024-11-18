@@ -15,50 +15,62 @@ class MainViewModel: ObservableObject {
     @Inject private var getCategoriesUseCase: GetCategoriesUseCase
     @Inject private var upsertCategoryUseCase: UpsertCategoryUseCase
     @Inject private var deleteCategoryUseCase: DeleteCategoryUseCase
+    @Inject private var upsertTodoUseCase: UpsertTodoUseCase
     
-    @Published var categories: Array<Domain.Category> = []
+    @Published private(set) var categories: Array<Domain.Category> = []
+    
+    private var cancellables: Set<AnyCancellable> = []
     
     init() {
         getCategories()
     }
     
-    func upsertCategoryTest() {
+    private func getCategories() {
+        getCategoriesUseCase.execute()
+            .sink {
+                switch($0) {
+                case .finished:
+                    print("getCategories finished")
+                case .failure(let error):
+                    print("getCategories error: \(error)")
+                }
+            } receiveValue: { [weak self] in
+                self?.categories = $0
+            }
+            .store(in: &cancellables)
+    }
+    
+    func upsertCategory(id: String?, title: String, des: String, color: Int) {
         do {
             try upsertCategoryUseCase.execute(
                 Category(
-                    id: "",
-                    category: "Category\(categories.count) This is category This is category This is category",
-                    categoryDes: "This is category\(categories.count)",
-                    color: (0xaa000000...0xffffffff).randomElement()!,
-                    todos: [
-                        Todo(id: "", todo: "Todo1", completed: Bool.random()),
-                        Todo(id: "", todo: "Todo2", completed: Bool.random()),
-                        Todo(id: "", todo: "Todo3", completed: Bool.random()),
-                        Todo(id: "", todo: "Todo4", completed: Bool.random()),
-                        Todo(id: "", todo: "Todo5", completed: Bool.random()),
-                    ]
+                    id: id ?? "",
+                    category: title,
+                    categoryDes: des,
+                    color: color,
+                    todos: []
                 )
             )
         } catch {
             print("upsertError: \(error)")
         }
-        
-        getCategories()
     }
     
-    func deleteCategoryTest() {
+    func deleteCategory(categoryId: String) {
         do {
-            try categories.forEach { category in
-                try deleteCategoryUseCase.execute(category.id)
-            }
+            try deleteCategoryUseCase.execute(categoryId)
         } catch {
             print("deleteError: \(error)")
         }
-        
-        getCategories()
     }
     
-    func getCategories() {
-        categories = getCategoriesUseCase.execute()
+    func upsertTodo(categoryId: String, todoName: String) {
+        do {
+            let todo = Todo(id: "", todo: todoName, completed: false)
+            
+            try upsertTodoUseCase.execute(categoryId: categoryId, todo: todo)
+        } catch {
+            print("upsertTodoError: \(error)")
+        }
     }
 }

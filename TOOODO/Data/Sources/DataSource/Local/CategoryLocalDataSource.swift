@@ -8,15 +8,17 @@
 import Foundation
 import RealmSwift
 
+import Combine
+
 public protocol CategoryLocalDataSource {
-    func getCategories() -> Array<CategoryDto>
+    func getCategories() -> AnyPublisher<Array<CategoryDto>, Error>
     func upsertCategory(category: CategoryDto) throws
     func deleteCategory(categoryId: ObjectId) throws
 }
 
 public class CategoryLocalDataSourceImpl: CategoryLocalDataSource {
     private let realm: Realm
-    
+        
     public init() {
         self.realm = try! Realm()
     }
@@ -25,8 +27,14 @@ public class CategoryLocalDataSourceImpl: CategoryLocalDataSource {
         self.realm = realm
     }
     
-    public func getCategories() -> Array<CategoryDto> {
-        return Array(realm.objects(CategoryDto.self))
+    public func getCategories() -> AnyPublisher<Array<CategoryDto>, Error> {
+        return realm.objects(CategoryDto.self)
+            .sorted(by: \.date, ascending: false)
+            .collectionPublisher
+            .map {
+                Array($0)
+            }
+            .eraseToAnyPublisher()
     }
     
     public func upsertCategory(category: CategoryDto) throws {

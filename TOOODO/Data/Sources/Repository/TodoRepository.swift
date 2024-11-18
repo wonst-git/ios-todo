@@ -6,6 +6,7 @@
 //
 
 import Domain
+import Combine
 import RealmSwift
 
 public class TodoRepositoryImpl: TodoRepository {
@@ -15,8 +16,12 @@ public class TodoRepositoryImpl: TodoRepository {
         self.localDataSource = localDataSource
     }
     
-    public func getTodos(categoryId: String) throws -> Array<Domain.Todo> {
-        return try localDataSource.getTodos(categoryId: ObjectId(string: categoryId)).map { $0.toDomain() }
+    public func getTodos(categoryId: String) throws -> AnyPublisher<Array<Domain.Todo>, Error> {
+        return try localDataSource.getTodos(categoryId: ObjectId(string: categoryId))
+            .map {
+                $0.map { $0.toDomain() }
+            }
+            .eraseToAnyPublisher()
     }
     
     public func upsertTodo(categoryId: String, todo: Domain.Todo) throws {
