@@ -6,7 +6,7 @@
 //
 
 public protocol UpsertTodoUseCase {
-    
+    func execute(categoryId: String, todo: Todo) throws
 }
 
 public final class UpsertTodoUseCaseImpl: UpsertTodoUseCase {
@@ -14,5 +14,9 @@ public final class UpsertTodoUseCaseImpl: UpsertTodoUseCase {
     
     public init(_ todoRepository: TodoRepository) {
         self.todoRepository = todoRepository
+    }
+    
+    public func execute(categoryId: String, todo: Todo) throws {
+        try todoRepository.upsert(categoryId: categoryId, todo: todo)
     }
 }

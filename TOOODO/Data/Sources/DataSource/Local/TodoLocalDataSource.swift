@@ -7,48 +7,59 @@
 
 import Foundation
 import RealmSwift
+import Combine
 
 public protocol TodoLocalDataSource {
-    func getTodos(categoryId: ObjectId) -> Array<TodoDto>
-    func upsertTodo(categoryId: ObjectId, todo: TodoDto) throws
-    func deleteTodo(todoId: ObjectId) throws
+    func get(categoryId: ObjectId) -> AnyPublisher<Array<TodoDto>, Error>
+    func upsert(categoryId: ObjectId, todo: TodoDto) throws
+    func delete(todo: TodoDto) throws
 }
 
-public class TodoLocalDataSourceImpl: TodoLocalDataSource {
-    private let realm: Realm
-    
-    public init() {
-        self.realm = try! Realm()
-    }
-    
-    internal init(_ realm: Realm) {
-        self.realm = realm
-    }
-    
-    public func getTodos(categoryId: ObjectId) -> Array<TodoDto> {
-        guard let category = realm.objects(CategoryDto.self).first(where: { $0.id == categoryId}) else { return [] }
-        
-        return Array(category.todos)
-    }
-    
-    public func upsertTodo(categoryId: ObjectId, todo: TodoDto) throws {
-        let category = realm.objects(CategoryDto.self).first(where: { $0.id == categoryId })
-        
-        try realm.write {
-            if let old = category?.todos.first(where: { $0.id == todo.id }) {
-                old.todo = todo.todo
-                old.completed = todo.completed
-            } else {
-                category?.todos.append(todo)
+public class TodoLocalDataSourceImpl: RealmManager, TodoLocalDataSource {
+    public func get(categoryId: ObjectId) -> AnyPublisher<Array<TodoDto>, Error> {
+        return getPublisher(CategoryDto.self) {
+            $0.where {
+                $0.id == categoryId
             }
         }
+        .map {
+            Array($0.first?.todos ?? List())
+        }
+        .eraseToAnyPublisher()
     }
     
-    public func deleteTodo(todoId: ObjectId) throws {
-        guard let todo = realm.objects(TodoDto.self).first(where: { $0.id == todoId }) else { return }
-        
-        try realm.write {
-            realm.delete(todo)
+    public func upsert(categoryId: ObjectId, todo: TodoDto) throws {
+        guard let category = (
+            super.get(CategoryDto.self) {
+                $0.where {
+                    $0.id == categoryId
+                }
+            }.first
+        ) else {
+            return
         }
+        
+        if (category.todos.contains { $0.id == todo.id }) {
+            try super.upsert(category)
+        } else {
+            var newTodos = Array(category.todos)
+            newTodos.append(todo)
+            
+            let newCategory = CategoryDto(
+                value: [
+                    "id": category.id,
+                    "category": category.category,
+                    "categoryDes": category.categoryDes,
+                    "color": category.color,
+                    "todos": newTodos
+                ]
+            )
+            
+            try super.upsert(newCategory)
+        }
+    }
+    
+    public func delete(todo: TodoDto) throws {
+        try super.delete(todo)
     }
 }

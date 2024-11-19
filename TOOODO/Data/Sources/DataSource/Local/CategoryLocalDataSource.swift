@@ -8,47 +8,26 @@
 import Foundation
 import RealmSwift
 
+import Combine
+
 public protocol CategoryLocalDataSource {
-    func getCategories() -> Array<CategoryDto>
-    func upsertCategory(category: CategoryDto) throws
-    func deleteCategory(categoryId: ObjectId) throws
+    func get() -> AnyPublisher<Array<CategoryDto>, Error>
+    func upsert(category: CategoryDto) throws
+    func delete(category: CategoryDto) throws
 }
 
-public class CategoryLocalDataSourceImpl: CategoryLocalDataSource {
-    private let realm: Realm
-    
-    public init() {
-        self.realm = try! Realm()
-    }
-    
-    internal init(_ realm: Realm) {
-        self.realm = realm
-    }
-    
-    public func getCategories() -> Array<CategoryDto> {
-        return Array(realm.objects(CategoryDto.self))
-    }
-    
-    public func upsertCategory(category: CategoryDto) throws {
-        let old = realm.objects(CategoryDto.self).first(where: { $0.id == category.id })
-        
-        try realm.write {
-            if (old == nil) {
-                realm.add(category)
-            } else {
-                old?.category = category.category
-                old?.categoryDes = category.categoryDes
-                old?.color = category.color
-                old?.todos = category.todos
-            }
+public class CategoryLocalDataSourceImpl: RealmManager, CategoryLocalDataSource {
+    public func get() -> AnyPublisher<Array<CategoryDto>, Error> {
+        return super.getPublisher(CategoryDto.self) { categories in
+            categories.sorted(by: \.date, ascending: false)
         }
     }
     
-    public func deleteCategory(categoryId: ObjectId) throws {
-        guard let category = realm.objects(CategoryDto.self).first(where: { $0.id == categoryId }) else { return }
-        
-        try realm.write {
-            realm.delete(category)
-        }
+    public func upsert(category: CategoryDto) throws {
+        try super.upsert(category)
+    }
+    
+    public func delete(category: CategoryDto) throws {
+        try super.delete(category)
     }
 }

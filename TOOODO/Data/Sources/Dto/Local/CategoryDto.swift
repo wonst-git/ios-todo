@@ -7,6 +7,7 @@
 
 import RealmSwift
 import Domain
+import Foundation
 
 public class CategoryDto: Object {
     @Persisted(primaryKey: true) var id: ObjectId
@@ -14,22 +15,31 @@ public class CategoryDto: Object {
     @Persisted var categoryDes: String
     @Persisted var color: Int
     @Persisted var todos: List<TodoDto>
+    @Persisted var date: Date = Date()
 }
 
 extension CategoryDto {
-    func toDomain() -> Category {
-        Category(id: self.id.stringValue, category: self.category, categoryDes: self.categoryDes, color: self.color, todos: self.todos.map{ $0.toDomain() })
+    func toDomain() -> Domain.Category {
+        Category(
+            id: self.id.stringValue,
+            category: self.category,
+            categoryDes: self.categoryDes,
+            color: self.color,
+            todos: self.todos.map{
+                $0.toDomain()
+            }
+        )
     }
     
-    class func fromDomain(_ entity: Category) -> CategoryDto {
-        let id: ObjectId = entity.id.isEmpty ? ObjectId() : try! ObjectId(string: entity.id)
-        
-        return CategoryDto(value: [
-            "id": id,
-            "category": entity.category,
-            "categoryDes": entity.categoryDes,
-            "color": entity.color,
-            "todos": entity.todos.map { TodoDto.fromDomain(entity: $0)}
-        ])
+    class func fromDomain(_ entity: Domain.Category) -> CategoryDto {
+        return CategoryDto(
+            value: [
+                "id": (try? ObjectId(string: entity.id)) ?? ObjectId.generate(),
+                "category": entity.category,
+                "categoryDes": entity.categoryDes,
+                "color": entity.color,
+                "todos": entity.todos.map { TodoDto.fromDomain(entity: $0)},
+            ]
+        )
     }
 }

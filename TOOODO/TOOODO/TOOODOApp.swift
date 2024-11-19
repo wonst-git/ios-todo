@@ -8,6 +8,7 @@
 import SwiftUI
 import Presentation
 import Data
+import DIContainer
 
 @main
 struct TOOODOApp: App {
@@ -17,7 +18,7 @@ struct TOOODOApp: App {
     
     var body: some Scene {
         WindowGroup {
-            RootView()
+            MainView()
         }
     }
 }

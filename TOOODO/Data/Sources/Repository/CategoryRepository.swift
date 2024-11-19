@@ -7,6 +7,7 @@
 
 import Domain
 import RealmSwift
+import Combine
 
 public class CategoryRepositoryImpl: CategoryRepository {
     private let localDataSource: CategoryLocalDataSource
@@ -15,15 +16,19 @@ public class CategoryRepositoryImpl: CategoryRepository {
         self.localDataSource = localDataSource
     }
     
-    public func getCategories() -> Array<Domain.Category> {
-        localDataSource.getCategories().map { $0.toDomain() }
+    public func get() -> AnyPublisher<Array<Domain.Category>, Error> {
+        localDataSource.get()
+            .map {
+                $0.map { $0.toDomain() }
+            }
+            .eraseToAnyPublisher()
     }
     
-    public func upsertCategory(category: Domain.Category) throws {
-        try localDataSource.upsertCategory(category: CategoryDto.fromDomain(category))
+    public func upsert(category: Domain.Category) throws {
+        try localDataSource.upsert(category: CategoryDto.fromDomain(category))
     }
     
-    public func deleteCategory(categoryId: String) throws {
-        try localDataSource.deleteCategory(categoryId: ObjectId(string: categoryId))
+    public func delete(category: Domain.Category) throws {
+        try localDataSource.delete(category: CategoryDto.fromDomain(category))
     }
 }
