@@ -8,7 +8,7 @@
 import Combine
 
 public protocol TodoRepository {
-    func getTodos(categoryId: String) throws -> AnyPublisher<Array<Todo>, Error>
-    func upsertTodo(categoryId: String, todo: Todo) throws
-    func deleteTodo(todoId: String) throws
+    func get(categoryId: String) throws -> AnyPublisher<Array<Todo>, Error>
+    func upsert(categoryId: String, todo: Todo) throws
+    func delete(todo: Todo) throws
 }

@@ -35,6 +35,7 @@ class MainViewModel: ObservableObject {
                     print("getCategories error: \(error)")
                 }
             } receiveValue: { [weak self] in
+                print("categoreis: \($0)")
                 self?.categories = $0
             }
             .store(in: &cancellables)
@@ -56,9 +57,9 @@ class MainViewModel: ObservableObject {
         }
     }
     
-    func deleteCategory(categoryId: String) {
+    func deleteCategory(category: Domain.Category) {
         do {
-            try deleteCategoryUseCase.execute(categoryId)
+            try deleteCategoryUseCase.execute(category)
         } catch {
             print("deleteError: \(error)")
         }

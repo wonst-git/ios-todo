@@ -15,32 +15,31 @@ public class CategoryDto: Object {
     @Persisted var categoryDes: String
     @Persisted var color: Int
     @Persisted var todos: List<TodoDto>
-    @Persisted var date: Date
+    @Persisted var date: Date = Date()
 }
 
 extension CategoryDto {
     func toDomain() -> Domain.Category {
-        Category(id: self.id.stringValue, category: self.category, categoryDes: self.categoryDes, color: self.color, todos: self.todos.map{ $0.toDomain() })
+        Category(
+            id: self.id.stringValue,
+            category: self.category,
+            categoryDes: self.categoryDes,
+            color: self.color,
+            todos: self.todos.map{
+                $0.toDomain()
+            }
+        )
     }
     
     class func fromDomain(_ entity: Domain.Category) -> CategoryDto {
-        if entity.id.isEmpty {
-            return CategoryDto(value: [
+        return CategoryDto(
+            value: [
+                "id": (try? ObjectId(string: entity.id)) ?? ObjectId.generate(),
                 "category": entity.category,
                 "categoryDes": entity.categoryDes,
                 "color": entity.color,
                 "todos": entity.todos.map { TodoDto.fromDomain(entity: $0)},
-                "date": Date()
-            ])
-        } else {
-            return CategoryDto(value: [
-                "id": try! ObjectId(string: entity.id),
-                "category": entity.category,
-                "categoryDes": entity.categoryDes,
-                "color": entity.color,
-                "todos": entity.todos.map { TodoDto.fromDomain(entity: $0)},
-                "date": Date()
-            ])
-        }
+            ]
+        )
     }
 }

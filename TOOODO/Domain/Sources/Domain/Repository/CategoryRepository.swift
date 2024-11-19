@@ -8,7 +8,7 @@
 import Combine
 
 public protocol CategoryRepository {
-    func getCategories() -> AnyPublisher<Array<Category>, Error>
-    func upsertCategory(category: Category) throws
-    func deleteCategory(categoryId: String) throws
+    func get() -> AnyPublisher<Array<Category>, Error>
+    func upsert(category: Category) throws
+    func delete(category: Category) throws
 }

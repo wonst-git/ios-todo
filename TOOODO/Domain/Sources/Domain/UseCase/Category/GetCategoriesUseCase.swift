@@ -19,6 +19,6 @@ public final class GetCategoriesUseCaseImpl: GetCategoriesUseCase {
     }
     
     public func execute() -> AnyPublisher<Array<Category>, Error> {
-        return self.categoryRepository.getCategories()
+        return self.categoryRepository.get()
     }
 }

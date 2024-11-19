@@ -17,6 +17,6 @@ public final class UpsertTodoUseCaseImpl: UpsertTodoUseCase {
     }
     
     public func execute(categoryId: String, todo: Todo) throws {
-        try todoRepository.upsertTodo(categoryId: categoryId, todo: todo)
+        try todoRepository.upsert(categoryId: categoryId, todo: todo)
     }
 }

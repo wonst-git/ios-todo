@@ -6,7 +6,7 @@
 //
 
 public protocol DeleteCategoryUseCase {
-    func execute(_ categoryId: String) throws
+    func execute(_ category: Category) throws
 }
 
 public final class DeleteCategoryUseCaseImpl: DeleteCategoryUseCase {
@@ -16,7 +16,7 @@ public final class DeleteCategoryUseCaseImpl: DeleteCategoryUseCase {
         self.categoryRepository = categoryRepository
     }
     
-    public func execute(_ categoryId: String) throws {
-        try self.categoryRepository.deleteCategory(categoryId: categoryId)
+    public func execute(_ category: Category) throws {
+        try self.categoryRepository.delete(category: category)
     }
 }

@@ -122,26 +122,9 @@ struct CategoryItemView: View {
         .background {
             BlurView()
                 .background {
-                    GeometryReader { geo in
-                        let color = Color.init(hex: category.color)
-                        let width = geo.size.width
-                        let height = geo.size.height
-                        
-                        Color.white
-                     
-                        ForEach((0...2), id: \.self) { id in
-                            let size = CGFloat((120...360).randomElement()!)
-                            let center = size / 2
-                            
-                            let offsetX = CGFloat((0...Int(width)).randomElement() ?? 0) - center
-                            let offsetY = CGFloat((0...Int(height)).randomElement() ?? 0) - center
-                            
-                            Circle()
-                                .size(width: size, height: size)
-                                .offset(x: offsetX, y: offsetY)
-                                .fill(color.darker(by: CGFloat((0...20).randomElement() ?? 0)))
-                        }
-                    }
+                    let color = Color.init(hex: category.color)
+
+                    RadialGradient(colors: [color.darker(by: 10), color.opacity(0.2)], center: .center, startRadius: 20, endRadius: 200)
                 }
         }
         .clipShape(RoundedRectangle.init(cornerRadius: 30))

@@ -17,6 +17,6 @@ public final class UpsertCategoryUseCaseImpl: UpsertCategoryUseCase {
     }
     
     public func execute(_ category: Category) throws {
-        try self.categoryRepository.upsertCategory(category: category)
+        try self.categoryRepository.upsert(category: category)
     }
 }

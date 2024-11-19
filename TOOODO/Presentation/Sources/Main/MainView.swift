@@ -177,8 +177,8 @@ extension MainView {
                     Task {
                         await close()
                         
-                        if let id = category?.id {
-                            viewModel.deleteCategory(categoryId: id)
+                        if let category = category {
+                            viewModel.deleteCategory(category: category)
                         }
                     }
                 } label: {
